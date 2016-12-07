@@ -37,12 +37,14 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
+import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioPort;
 import android.media.AudioPatch;
 import android.media.AudioManager.OnAudioPortUpdateListener;
 import android.media.audiofx.AudioEffect;
 import android.media.audiofx.AudioEffect.Descriptor;
+import android.media.audiofx.Virtualizer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -826,5 +828,21 @@ public class ActivityMusic extends Activity {
         final Toast toast = Toast.makeText(context, message, duration);
         toast.setGravity(Gravity.CENTER, toast.getXOffset() / 2, toast.getYOffset() / 2);
         toast.show();
+    }
+
+    private static boolean isVirtualizerTransauralSupported() {
+        Virtualizer virt = null;
+        boolean transauralSupported = false;
+        try {
+            virt = new Virtualizer(0, android.media.AudioSystem.newAudioSessionId());
+            transauralSupported = virt.canVirtualize(AudioFormat.CHANNEL_OUT_STEREO,
+                    Virtualizer.VIRTUALIZATION_MODE_TRANSAURAL);
+        } catch (Exception e) {
+        } finally {
+            if (virt != null) {
+                virt.release();
+            }
+        }
+        return transauralSupported;
     }
 }
